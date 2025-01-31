@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: web-screenshot-app
+    env: node
+    region: oregon
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: NPM_CONFIG_PRODUCTION
+        value: false
+    plan: free
+    autoDeploy: true
