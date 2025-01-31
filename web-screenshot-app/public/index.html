@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Screenshot & Search App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .section {
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Web Screenshot & Search App</h1>
+    
+    <div class="section">
+        <h2>Google Search</h2>
+        <input type="text" id="searchQuery" placeholder="Enter search query">
+        <button onclick="performSearch()">Search and Get Results</button>
+    </div>
+    
+    <div class="section">
+        <h2>Website Screenshot</h2>
+        <input type="url" id="websiteUrl" placeholder="Enter website URL">
+        <button onclick="takeScreenshot()">Take Screenshot</button>
+    </div>
+
+    <script>
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value;
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'search_results.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    alert('Failed to perform search');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        }
+
+        async function takeScreenshot() {
+            const url = document.getElementById('websiteUrl').value;
+            if (!url) {
+                alert('Please enter a website URL');
+                return;
+            }
+
+            try {
+                const response = await fetch('/screenshot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = 'webpage_results.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    alert('Failed to take screenshot');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        }
+    </script>
+</body>
+</html>
